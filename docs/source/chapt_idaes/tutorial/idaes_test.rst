@@ -111,13 +111,13 @@ Instructions
       from idaes.core.flowsheet_model import FlowsheetBlock
 
       # Import the BTX_ideal property package to create a properties block for the flowsheet
-      from idaes.generic_models.properties.activity_coeff_models import BTX_activity_coeff_VLE
+      from idaes.models.properties.activity_coeff_models import BTX_activity_coeff_VLE
 
       # Import heater unit model from the model library
-      from idaes.generic_models.unit_models.heater import Heater
+      from idaes.models.unit_models.heater import Heater
 
       # Import flash unit model from the model library
-      from idaes.generic_models.unit_models.flash import Flash
+      from idaes.models.unit_models.flash import Flash
 
       # Import methods for unit model connection and flowsheet initialization
       from pyomo.network import Arc, SequentialDecomposition
@@ -128,19 +128,19 @@ Instructions
       # Create the ConcreteModel and the FlowsheetBlock, and attach the flowsheet block to it.
       m = ConcreteModel()
 
-      m.fs = FlowsheetBlock(default={"dynamic": False}) # dynamic or ss flowsheet needs to be specified here
+      m.fs = FlowsheetBlock(dynamic=False) # dynamic or ss flowsheet needs to be specified here
 
       # Add properties parameter block to the flowsheet with specifications
-      m.fs.properties = BTX_activity_coeff_VLE.BTXParameterBlock(default={"valid_phase":
-                                                           ('Liq', 'Vap'),
-                                                           "activity_coeff_model":
-                                                           "Ideal"})
+      m.fs.properties = BTX_activity_coeff_VLE.BTXParameterBlock(valid_phase=
+                                                     ('Liq', 'Vap'),
+                                                     activity_coeff_model=
+                                                     "Ideal")
 
       # Create an instance of the heater unit, attaching it to the flowsheet
       # Specify that the property package to be used with the heater is the one we created earlier.
-      m.fs.heater = Heater(default={"property_package": m.fs.properties})
+      m.fs.heater = Heater(property_package= m.fs.properties)
 
-      m.fs.flash = Flash(default={"property_package": m.fs.properties})
+      m.fs.flash = Flash(property_package= m.fs.properties)
 
       # Connect heater and flash models using an arc
       m.fs.heater_flash_arc = Arc(source=m.fs.heater.outlet, destination=m.fs.flash.inlet)
